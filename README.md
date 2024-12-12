@@ -180,10 +180,49 @@ The weather report received by the kafka topic will be shown as
 #### 5.1.2 Crime data feed
 The real-time crime data is retrieved by call to the api https://data.cityofchicago.org/resource/ijzp-q8t2.json (API documentation https://dev.socrata.com/foundry/data.cityofchicago.org/ijzp-q8t2). The Java program to retrieve the real-time crime data is inside `speed_layer/crime_report`
 In the `StreamCrimeIntoKafka` java class, we trigger the retrieving of crime records every 60 minutes (since the crime record update with our data source is relatively slow, and even within the 60 minutes interval, it is not guaranteed to have new crime record added into the data set). If we retrieved with some new crime records, it will be sent to a Kafka topic named `haichenfu-crime-report`. 
+The crime report program is deployed to our cluster and can be run with
+```
+cd haichenfu/crime_report/target
+java -cp uber-crime_report-1.0-SNAPSHOT.jar org.example.StreamCrimeIntoKafka $KAFKABROKERS
+```
+The messages in the `haichenfu-crime-report` can be checked with command: 
 ```
 kafka-console-consumer.sh --bootstrap-server $KAFKABROKERS --topic haichenfu-crime-report --from-beginning 
 ```
 The crime report received by the kafka topic will be displayed as 
 ![My Image](screenshots/kafka_crime.png)
 #### 5.2.1 Weather data processing
+The messages in the `haichenfu-weather-report` kafka is retrieved and processed into an Hbase table `haichenfu_latest_weather` with code in `speed_layer/weather-speed`. 
+The Hbase table is created with command listed below and we have station to be its row key (station is "725340" by default so this Hbase table will only have one row of data)
+```
+create 'haichenfu_latest_weather', 'weather'
+```
+```
+val batchStats = reports.map(wr => {
+      val put = new Put(Bytes.toBytes("725340"))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("clear"), Bytes.toBytes(wr.clear))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("fog"), Bytes.toBytes(wr.fog))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("rain"), Bytes.toBytes(wr.rain))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("snow"), Bytes.toBytes(wr.snow))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("hail"), Bytes.toBytes(wr.hail))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("thunder"), Bytes.toBytes(wr.thunder))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("tornado"), Bytes.toBytes(wr.tornado))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("temperature"), Bytes.toBytes(wr.temperature))
+      put.addColumn(Bytes.toBytes("weather"), Bytes.toBytes("visibility"), Bytes.toBytes(wr.visibility))
+      table.put(put)
+    })
+    batchStats.print()
+```
+The code is deployed to our cluster and can be run with command
+```
+cd haichenfu/weather_speed/target
+spark-submit --driver-java-options "-Dlog4j.configuration=file:///home/sshuser/ss.log4j.properties" --class StreamWeather uber-weather-speed-1.0-SNAPSHOT.jar $KAFKABROKERS
+```
 #### 5.2.2 Crime data processing
+The messages in `haichenfu-crime-report` kafka is retrieved and processed into Hbase table `haichenfu_crimes_by_years` with code in `speed_layer/crime-speed`.
+We firstly retrieve the latest weather from Hbase table `haichenfu_latest_weather` for station "725340", and increment the \<weather\>_count, \<weather\>_crime by 1 when processing each new crime records from our kafka messages. 
+The code is deployed to our cluster and can be run with command
+```
+cd haichenfu/crime_speed/target
+spark-submit --driver-java-options "-Dlog4j.configuration=file:///home/sshuser/ss.log4j.properties" --class StreamCrimes uber-crime-speed-1.0-SNAPSHOT.jar $KAFKABROKERS
+```
