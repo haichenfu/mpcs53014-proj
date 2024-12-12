@@ -136,5 +136,34 @@ group by w.year, y.clear_count,y.fog_count, y.rain_count, y.snow_count, y.hail_c
 ```
 
 ### Part3 Serving Layer
+Firstly, we create a table in Hbase shell with command: 
+```
+create 'haichenfu_crimes_by_years_hbase', 'crime'
+```
+The hive table `haichenfu_crimes_by_year` is loaded into Hbase with script `serving_layer/crimes_by_year_hbase.hql`. 
+```
+create external table haichenfu_crimes_by_years_hbase (
+    year int, clear_crime bigint, fog_crime bigint, rain_crime bigint, snow_crime bigint,
+    hail_crime bigint, thunder_crime bigint, tornado_crime bigint, visibility_clean_crime bigint,
+    visibility_moderate_crime bigint, visibility_low_crime bigint, visibility_poor_crime bigint,
+    temp_very_cold_crime bigint, temp_cold_crime bigint, temp_chilly_crime bigint, temp_warm_crime bigint,
+    temp_hot_crime bigint, 
+    clear_count bigint, fog_count bigint, rain_count bigint, snow_count bigint,
+    hail_count bigint, thunder_count bigint, tornado_count bigint, visibility_clean_count bigint,
+    visibility_moderate_count bigint, visibility_low_count bigint, visibility_poor_count bigint,
+    temp_very_cold_count bigint, temp_cold_count bigint, temp_chilly_count bigint, temp_warm_count bigint,
+    temp_hot_count bigint
+)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES ('hbase.columns.mapping' = ':key,crime:clear_crime#b,crime:fog_crime#b,crime:rain_crime#b,crime:snow_crime#b,crime:hail_crime#b,crime:thunder_crime#b,crime:tornado_crime#b,crime:visibility_clean_crime#b,crime:visibility_moderate_crime#b,crime:visibility_low_crime#b,crime:visibility_poor_crime#b,crime:temp_very_cold_crime#b,crime:temp_cold_crime#b,crime:temp_chilly_crime#b,crime:temp_warm_crime#b, crime:temp_hot_crime#b,crime:clear_count#b,crime:fog_count#b,crime:rain_count#b,crime:snow_count#b,crime:hail_count#b,crime:thunder_count#b,crime:tornado_count#b,crime:visibility_clean_count#b,crime:visibility_moderate_count#b,crime:visibility_low_count#b,crime:visibility_poor_count#b,crime:temp_very_cold_count#b,crime:temp_cold_count#b,crime:temp_chilly_count#b,crime:temp_warm_count#b, crime:temp_hot_count#b')
+TBLPROPERTIES ('hbase.table.name' = 'haichenfu_crimes_by_years_hbase');
+```
+The row key for this hbase table is year (e.g. "2023", "2024"), and we store occurance of crime on specific weather, and occurance of the weather in \<weather\>_crime, \<weather\>_count. To calculate the averaged daily crime amount on the the specific weather condition for that year, we can query the hbase by year and calculate average with \<weather\>_crime / \<weather\>_count. 
 ### Part4 Web App
+On cluster, we can start the webapp with command 
+```
+cd haichenfu/app
+node app.js 3032 https://hbase-mpcs53014-2024.azurehdinsight.net/hbaserest $KAFKABROKERS
+```
+The webapp will be able to accessed at http://10.0.0.38:3032/. 
 ### Part5 Speed Layer
