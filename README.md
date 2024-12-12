@@ -162,8 +162,28 @@ The row key for this hbase table is year (e.g. "2023", "2024"), and we store occ
 ### Part4 Web App
 On cluster, we can start the webapp with command 
 ```
+ssh -i ~/.ssh/mpcs53014 -C2qTnNf -D 9876 sshuser@hbase-mpcs53014-2024-ssh.azurehdinsight.net
 cd haichenfu/app
 node app.js 3032 https://hbase-mpcs53014-2024.azurehdinsight.net/hbaserest $KAFKABROKERS
 ```
 The webapp will be able to accessed at http://10.0.0.38:3032/. 
 ### Part5 Speed Layer
+#### 5.1.1 Weather data feed
+I simulated the real-time weather report with weather form here as I fail to find the appropriate real-time weather feed that could feed in the weather condition data as expected. The weather form can be accessed at http://10.0.0.38:3032/submit-weather.html. 
+![My Image](screenshots/weather_form.png)
+The weather report is sent to a Kafka topic named `haichenfu-weather-report`. The messages in this Kafka topic can be checked with command:
+```
+kafka-console-consumer.sh --bootstrap-server $KAFKABROKERS --topic haichenfu-weather-report --from-beginning 
+```
+The weather report received by the kafka topic will be shown as 
+![My Image](screenshots/kafka_weather.png)
+#### 5.1.2 Crime data feed
+The real-time crime data is retrieved by call to the api https://data.cityofchicago.org/resource/ijzp-q8t2.json (API documentation https://dev.socrata.com/foundry/data.cityofchicago.org/ijzp-q8t2). The Java program to retrieve the real-time crime data is inside `speed_layer/crime_report`
+In the `StreamCrimeIntoKafka` java class, we trigger the retrieving of crime records every 60 minutes (since the crime record update with our data source is relatively slow, and even within the 60 minutes interval, it is not guaranteed to have new crime record added into the data set). If we retrieved with some new crime records, it will be sent to a Kafka topic named `haichenfu-crime-report`. 
+```
+kafka-console-consumer.sh --bootstrap-server $KAFKABROKERS --topic haichenfu-crime-report --from-beginning 
+```
+The crime report received by the kafka topic will be displayed as 
+![My Image](screenshots/kafka_crime.png)
+#### 5.2.1 Weather data processing
+#### 5.2.2 Crime data processing
