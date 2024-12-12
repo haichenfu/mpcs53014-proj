@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+  <head>
+    <title>Chicago Crime By Weather</title>
+    <link type="text/css" rel="stylesheet" href="elegant-aero.css" />
+  </head>
+  <!-- Thanks to Mario C. E. Freese <mcefreese@gmail.com> for permission to use background image -->
+  <body style='background-image:URL("map.png");background-repeat:no-repeat;background-position:center top;-webkit-background-size:100%;-moz-background-size:100%;-o-background-size:100%;background-size: 100%;'>
+    <p style="margin-bottom:2cm"/>
+    <h1 style="text-align: center;padding-top: 20px">Look up Crime numbers by Weather in Chicago By Year (2001-2024)</h1>
+    <form action="/crimes.html" style="width:300px;margin:0 auto;padding-top:2px;background:#FFFFFF" method="get" target="results_iframe" class="elegant-aero">
+      <label>
+	<span>Year:</span>
+	<input type="text" name="year" value="2024"/>
+      </label>
+      <label>
+	<span></span> <input  type="submit" value="Submit">
+      </label>
+    </form>
+    <p style="margin-bottom:2cm"/>
+
+    <iframe frameBorder="0" name="results_iframe" style="display:block; min-height:220px;width:90%;margin-left:auto;margin-right:auto"/>
+  </body>
+</html>

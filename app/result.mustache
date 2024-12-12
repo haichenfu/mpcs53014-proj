@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+  <head>
+    <title>Result</title>
+    <link type="text/css" rel="stylesheet" href="table.css" />
+  </head>
+  <body>
+    <div style="min-height:200px;">
+        <h3>Average Crimes in Chicago by weather in year {{year}}</h3>
+        <p style="bottom-margin:10px">
+        <table class="CSS_Table_Example" style="width:80%;margin:auto;">
+            <tr><td>Clear</td><td>Fog</td><td>Rain</td><td>Snow</td><td>Hail</td><td>Thunder</td><td>Tornado</td>
+                <td>Clean Visibility</td><td>Moderate Visibility</td><td>Low Visibility</td><td>Poor Visibility</td>
+                <td>Very Cold Temperature</td><td>Cold Temperature</td><td>Chill Temperature</td>
+                <td>Warm Temperature</td><td>Hot Temperature</td></tr>
+            <tr><td>{{clear}}</td><td>{{fog}}</td><td>{{rain}}</td><td>{{snow}}</td>
+                <td>{{hail}}</td><td>{{thunder}}</td><td>{{tornado}}</td>
+                <td>{{visibility_clean}}</td><td>{{visibility_moderate}}</td><td>{{visibility_low}}</td><td>{{visibility_poor}}</td>
+                <td>{{temp_very_cold}}</td><td>{{temp_cold}}</td><td>{{temp_chilly}}</td><td>{{temp_warm}}</td>
+                <td>{{temp_hot}}</td></tr>
+
+        </table>
+        </p>
+    </div>
+
+</body></html>

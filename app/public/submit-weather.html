@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+  <head>
+    <title>Submit Weather</title>
+    <link type="text/css" rel="stylesheet" href="/elegant-aero.css" />
+  </head>
+
+  <body style='background-image:URL("map.png");background-repeat:no-repeat;background-position:center top;-webkit-background-size:100%;-moz-background-size:100%;-o-background-size:100%;background-size: 100%;'>
+    <p style="margin-bottom:5px"/>
+    <h2 style="text-align: center;padding-top: 20px">&nbsp;Submit weather report&nbsp;</h2>
+    <form action="/weather.html" style="background:#FFFFFF;width:60%;margin:auto" method="get" class="elegant-aero">
+      <label style="padding-top: 20px; ">
+	        <span>Temperature:</span> <input type="number" name="temperature" value="0"/>
+      </label>
+        <label>
+            <span>Visibility:</span> <input type="number" name="visibility" value="0"/>
+        </label>
+      <label style="font-weight:bold;color:#5E5E5E;text-align: center;">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;fog <input type="checkbox" name="fog" value="1"/>
+        rain <input type="checkbox" name="rain" value="1"/>
+
+        snow <input type="checkbox" name="snow" value="1"/>
+        hail <input type="checkbox" name="hail" value="1"/>
+        thunder <input type="checkbox" name="thunder" value="1"/>
+        tornado <input type="checkbox" name="tornado" value="1"/>
+      </label>
+      <label>
+	<span>&nbsp;</span><input type="submit" value="Submit">
+      </label>
+    </form>
+    <iframe frameBorder="0" name="results_iframe" style="width:100%"/>
+  </body>
+</html>
