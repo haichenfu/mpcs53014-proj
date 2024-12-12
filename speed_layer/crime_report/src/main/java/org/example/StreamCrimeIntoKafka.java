@@ -37,7 +37,7 @@ public class StreamCrimeIntoKafka {
 
 				Invocation.Builder bldr = client.target("https://data.cityofchicago.org/resource/ijzp-q8t2.json")
 						.queryParam("$select", "id,date,primary_type,location_description") // Fields to select
-						.queryParam("$where", whereClause) // Filter records within the last 3 minutes
+						.queryParam("$where", whereClause) // Filter records within the last 60 minutes
 						.request("application/json")
 						.header("X-App-Token", "JgumTtgr5cQQx47hIHJohQHoH");
 				try {
